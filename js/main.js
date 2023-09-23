@@ -38,6 +38,7 @@ form.addEventListener('submit', function (event) {
 function renderEntry(entry) {
   const li = document.createElement('li');
   li.className = 'row';
+  li.setAttribute('data-entry-id', entry.entryId);
   const imageDiv = document.createElement('div');
   imageDiv.className = 'column-half';
   const image = document.createElement('img');
@@ -51,6 +52,13 @@ function renderEntry(entry) {
   // this is title div
   const headerThree = document.createElement('h3');
   headerThree.textContent = entry.title;
+  // for pencil button
+  const pencilA = document.createElement('a');
+  pencilA.className = 'pencil';
+  const fontPencil = document.createElement('i');
+  fontPencil.className = 'fa-solid fa-pencil';
+  pencilA.append(fontPencil);
+  headerThree.append(pencilA);
 
   // notes div
   const noteDiv = document.createElement('div');
@@ -105,4 +113,10 @@ const anchor = document.getElementById('entries-anchor');
 
 anchor.addEventListener('click', function () {
   viewSwap('entries');
+});
+
+const unList = document.getElementById('unList');
+
+unList.addEventListener('click', function () {
+  viewSwap('entry-form');
 });

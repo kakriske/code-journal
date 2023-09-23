@@ -74,3 +74,8 @@ img {
   font-size: large;
   text-decoration: none;
 }
+
+.pencil {
+  display: flex;
+  justify-content: flex-end;
+}
