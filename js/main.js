@@ -20,16 +20,42 @@ form.addEventListener('submit', function (event) {
     notes: document.getElementById('notes').value,
   };
 
-  formData.entryId = data.nextEntryId;
-  data.nextEntryId++;
-  data.entries.unshift(formData);
+  if (data.editing !== null) {
+    formData.entryId = data.editing.entryId; // updateId data.editing to formData
 
-  const newRender = renderEntry(formData);
-  const unOrder = document.getElementById('unList');
-  unOrder.prepend(newRender);
+    for (let i = 0; i < data.entries.length; i++) {
+      if (data.entries[i].entryId === formData.entryId) {
+        data.entries[i] = formData;
+        const existingLi = document.querySelector(
+          `li[data-entry-id="${formData.entryId}"]`
+        );
+
+        if (existingLi) {
+          const newRender = renderEntry(formData);
+          existingLi.replaceWith(newRender);
+        }
+
+        data.editing = null;
+        break;
+      }
+    }
+  } else {
+    formData.entryId = data.nextEntryId;
+    data.nextEntryId++;
+    data.entries.unshift(formData);
+
+    const newRender = renderEntry(formData);
+    const unOrder = document.getElementById('unList');
+    unOrder.prepend(newRender);
+  }
+
+  document.querySelector('.column-full').textContent = 'New-Entry';
+
   toggleNoEntries();
 
   viewSwap('entries');
+  document.querySelector('.column-full').textContent = 'New Entry';
+  data.editing = null;
 
   photoPreview.setAttribute('src', '../images/placeholder-image-square.jpg');
   form.reset();
@@ -118,5 +144,24 @@ anchor.addEventListener('click', function () {
 const unList = document.getElementById('unList');
 
 unList.addEventListener('click', function () {
-  viewSwap('entry-form');
+  const click = event.target;
+  if (click.className.includes('pencil')) {
+    viewSwap('entry-form');
+    const idEntry = click.closest('li').getAttribute('data-entry-id');
+    for (let i = 0; i < data.entries.length; i++) {
+      if (data.entries[i].entryId === Number(idEntry)) {
+        data.editing = data.entries[i];
+      }
+    }
+
+    const titleInput = document.getElementById('title');
+    const photoInput = document.getElementById('photo');
+    const notesInput = document.getElementById('notes');
+
+    titleInput.value = data.editing.title;
+    photoInput.value = data.editing.photo;
+    photoPreview.setAttribute('src', data.editing.photo);
+    notesInput.value = data.editing.notes;
+    document.querySelector('.column-full').textContent = 'Edit Entry';
+  }
 });
